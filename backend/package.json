@@ -13,6 +13,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",
+    "db:seed-if-empty": "node --env-file=.env scripts/seed-if-empty.mjs",
     "db:reset": "prisma migrate reset --force",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
