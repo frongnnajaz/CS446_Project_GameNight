@@ -1,0 +1,8 @@
+# Frontend อยู่ในโฟลเดอร์ frontend/ (Backend ต้อง deploy แยกบนโฮสต์ที่รัน Node.js ได้)
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"

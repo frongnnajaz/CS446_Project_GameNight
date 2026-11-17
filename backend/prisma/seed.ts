@@ -1,0 +1,555 @@
+// ข้อมูลตัวอย่างของฐานข้อมูล (รันด้วย npm run db:seed หรือ npx prisma db seed)
+// แยกจากข้อมูล API เดิม (games.json / genres.json / platforms.json / prices.json) เป็นแต่ละตาราง
+// การรันซ้ำจะล้างข้อมูลเดิมทั้งหมดแล้วใส่ใหม่
+import 'dotenv/config'
+import { prisma } from '../src/db'
+import { hashPassword } from '../src/lib/auth'
+
+interface SeedGame {
+  id: number
+  slug: string
+  name: string
+  released: string | null
+  rating: number
+  ratingsCount: number
+  added: number
+  metacritic: number | null
+  description: string
+  genres: number[]
+  platforms: number[]
+  developers: number[]
+  publishers: number[]
+  price: { price: number; discountPercent: number; isFeatured: boolean }
+}
+
+const genres = [
+  {"id":4,"name":"Action","slug":"action"},
+  {"id":5,"name":"RPG","slug":"role-playing-games-rpg"},
+  {"id":3,"name":"Adventure","slug":"adventure"},
+  {"id":10,"name":"Strategy","slug":"strategy"},
+  {"id":51,"name":"Indie","slug":"indie"},
+  {"id":2,"name":"Shooter","slug":"shooter"},
+  {"id":14,"name":"Simulation","slug":"simulation"},
+  {"id":7,"name":"Puzzle","slug":"puzzle"},
+  {"id":83,"name":"Platformer","slug":"platformer"},
+  {"id":1,"name":"Racing","slug":"racing"},
+  {"id":15,"name":"Sports","slug":"sports"},
+  {"id":6,"name":"Fighting","slug":"fighting"},
+]
+
+const platforms = [
+  {"id":1,"name":"PC","slug":"pc"},
+  {"id":2,"name":"PlayStation","slug":"playstation"},
+  {"id":3,"name":"Xbox","slug":"xbox"},
+  {"id":7,"name":"Nintendo","slug":"nintendo"},
+  {"id":4,"name":"iOS","slug":"ios"},
+  {"id":8,"name":"Android","slug":"android"},
+]
+
+const companies = [
+  {"id":10010,"name":"Nova Forge Studio"},
+  {"id":10011,"name":"Lumen Publishing"},
+  {"id":10020,"name":"Redline Works"},
+  {"id":10030,"name":"Little Lantern"},
+  {"id":10040,"name":"Bastion Games"},
+  {"id":10041,"name":"Ironclad Media"},
+  {"id":10050,"name":"Sproutling"},
+  {"id":10060,"name":"Courtside Interactive"},
+  {"id":10070,"name":"Ashen Gate"},
+  {"id":10080,"name":"Saltwind"},
+  {"id":10090,"name":"Quiet Signal"},
+  {"id":10100,"name":"Orbital Nine"},
+  {"id":10110,"name":"Honeybun Games"},
+  {"id":10120,"name":"Byte Fox"},
+  {"id":10140,"name":"Clank Co."},
+  {"id":10170,"name":"Dojo Ten"},
+]
+
+const games: SeedGame[] = [
+  {
+    id: 1001,
+    slug: "starfall-odyssey",
+    name: "Starfall Odyssey",
+    released: "2025-03-14",
+    rating: 4.6,
+    ratingsCount: 9120,
+    added: 9120,
+    metacritic: 88,
+    description: "ผจญภัยข้ามกาแล็กซีในโลกเปิดขนาดใหญ่ สร้างยาน รวบรวมลูกเรือ และเลือกเส้นทางของเรื่องราวด้วยตัวเอง\n\nทุกดาวเคราะห์มีภารกิจหลักและภารกิจลับให้ค้นหา การตัดสินใจของผู้เล่นส่งผลต่อฉากจบที่แตกต่างกันถึง 6 แบบ",
+    genres: [4,5],
+    platforms: [1,2,3],
+    developers: [10010],
+    publishers: [10011],
+    price: {"price":1299,"discountPercent":50,"isFeatured":true},
+  },
+  {
+    id: 1002,
+    slug: "neon-drift",
+    name: "Neon Drift",
+    released: "2024-11-02",
+    rating: 4.3,
+    ratingsCount: 6340,
+    added: 6340,
+    metacritic: 81,
+    description: "แข่งรถสตรีทในเมืองแสงนีออนยามค่ำคืน ปรับแต่งรถได้กว่า 200 ชิ้นส่วน\n\nมีโหมดเนื้อเรื่อง โหมดไทม์แอทแทก และแข่งออนไลน์สูงสุด 12 คน",
+    genres: [1],
+    platforms: [1,2,3,7],
+    developers: [10020],
+    publishers: [10020],
+    price: {"price":459,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1003,
+    slug: "hollow-grove",
+    name: "Hollow Grove",
+    released: "2023-08-21",
+    rating: 4.7,
+    ratingsCount: 8410,
+    added: 8410,
+    metacritic: 90,
+    description: "เดินทางผ่านป่าลึกลับในบทบาทวิญญาณตัวน้อยที่ตามหาความทรงจำที่หายไป\n\nภาพวาดมือทั้งเกมและดนตรีประกอบแบบออร์เคสตรา เหมาะกับคนที่ชอบเกมเล่าเรื่องแบบเงียบ ๆ",
+    genres: [3,51],
+    platforms: [1,7],
+    developers: [10030],
+    publishers: [10030],
+    price: {"price":289,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1004,
+    slug: "iron-legion",
+    name: "Iron Legion",
+    released: "2024-05-09",
+    rating: 4.2,
+    ratingsCount: 4120,
+    added: 4120,
+    metacritic: 79,
+    description: "วางแผนสงครามแบบเรียลไทม์ในยุคไอน้ำ สร้างฐาน ผลิตกองทัพ และยึดครองแผนที่\n\nรองรับการเล่นแบบผู้เล่นหลายคนและโหมดแคมเปญ 30 ภารกิจ",
+    genres: [10],
+    platforms: [1],
+    developers: [10040],
+    publishers: [10041],
+    price: {"price":899,"discountPercent":20,"isFeatured":false},
+  },
+  {
+    id: 1005,
+    slug: "pixel-harvest",
+    name: "Pixel Harvest",
+    released: "2022-10-12",
+    rating: 4.5,
+    ratingsCount: 7780,
+    added: 7780,
+    metacritic: 85,
+    description: "ทำฟาร์มในหมู่บ้านเล็ก ๆ ปลูกผัก เลี้ยงสัตว์ และผูกมิตรกับชาวบ้าน\n\nเล่นคนเดียวหรือชวนเพื่อนมาทำฟาร์มด้วยกันได้สูงสุด 4 คน",
+    genres: [51,14],
+    platforms: [1,7,4,8],
+    developers: [10050],
+    publishers: [10050],
+    price: {"price":199,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1006,
+    slug: "skyline-strikers",
+    name: "Skyline Strikers",
+    released: "2025-06-30",
+    rating: 4,
+    ratingsCount: 3050,
+    added: 3050,
+    metacritic: 74,
+    description: "ฟุตบอลแนวอาร์เคดบนดาดฟ้าตึกสูง เล่นทีมละ 3 คน เกมเร็วและดูง่าย\n\nมีลีกออนไลน์จัดอันดับทุกฤดูกาล",
+    genres: [15],
+    platforms: [1,2,3],
+    developers: [10060],
+    publishers: [10060],
+    price: {"price":1190,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1007,
+    slug: "crimson-vow",
+    name: "Crimson Vow",
+    released: "2024-10-25",
+    rating: 4.4,
+    ratingsCount: 6900,
+    added: 6900,
+    metacritic: 84,
+    description: "แอ็กชันสยองขวัญในปราสาทต้องสาป ต่อสู้กับสิ่งชั่วร้ายด้วยดาบและเวทมนตร์โลหิต\n\nระบบต่อสู้เน้นจังหวะและการหลบหลีก บอสแต่ละตัวมีรูปแบบการโจมตีเฉพาะ",
+    genres: [4],
+    platforms: [1,2,3],
+    developers: [10070],
+    publishers: [10011],
+    price: {"price":749,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1008,
+    slug: "tidebound",
+    name: "Tidebound",
+    released: "2025-01-18",
+    rating: 4.1,
+    ratingsCount: 7020,
+    added: 7020,
+    metacritic: 77,
+    description: "ล่องเรือสำรวจหมู่เกาะในโลกเปิด เล่นฟรีและเล่นข้ามแพลตฟอร์มได้\n\nร่วมมือกับผู้เล่นคนอื่นเพื่อค้นหาสมบัติใต้ทะเล",
+    genres: [3],
+    platforms: [1,2,3,4,8],
+    developers: [10080],
+    publishers: [10080],
+    price: {"price":0,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1009,
+    slug: "echo-station",
+    name: "Echo Station",
+    released: "2023-04-04",
+    rating: 4.3,
+    ratingsCount: 3890,
+    added: 3890,
+    metacritic: 83,
+    description: "ไขปริศนาในสถานีอวกาศร้างด้วยการบันทึกและเล่นซ้ำเสียงสะท้อนของตัวเอง\n\nมี 60 ด่านที่ยากขึ้นเรื่อย ๆ",
+    genres: [7,51],
+    platforms: [1,7],
+    developers: [10090],
+    publishers: [10090],
+    price: {"price":329,"discountPercent":25,"isFeatured":false},
+  },
+  {
+    id: 1010,
+    slug: "nova-frontier",
+    name: "Nova Frontier",
+    released: "2024-02-15",
+    rating: 3.9,
+    ratingsCount: 5230,
+    added: 5230,
+    metacritic: 72,
+    description: "เกมยิงมุมมองบุคคลที่หนึ่งบนดาวอาณานิคม ต่อสู้แบบทีม 5 ต่อ 5\n\nเลือกได้ 12 ตัวละครที่มีความสามารถไม่ซ้ำกัน",
+    genres: [2,4],
+    platforms: [1,2,3],
+    developers: [10100],
+    publishers: [10100],
+    price: {"price":990,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1011,
+    slug: "moonlit-bakery",
+    name: "Moonlit Bakery",
+    released: "2025-08-08",
+    rating: 4.4,
+    ratingsCount: 4470,
+    added: 4470,
+    metacritic: 82,
+    description: "เปิดร้านเบเกอรีที่เปิดเฉพาะตอนกลางคืน อบขนมให้ลูกค้าที่เป็นภูตและสัตว์วิเศษ\n\nปลดล็อกสูตรใหม่และตกแต่งร้านได้ตามใจ",
+    genres: [14,51],
+    platforms: [1,7,4],
+    developers: [10110],
+    publishers: [10110],
+    price: {"price":359,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1012,
+    slug: "shadow-circuit",
+    name: "Shadow Circuit",
+    released: "2023-12-01",
+    rating: 4.6,
+    ratingsCount: 5610,
+    added: 5610,
+    metacritic: 87,
+    description: "แพลตฟอร์มความเร็วสูงในโลกไซเบอร์ วิ่ง กระโดด และแฮ็กกำแพงเพื่อผ่านด่าน\n\nมีโหมดสปีดรันและตารางคะแนนทั่วโลก",
+    genres: [83,4],
+    platforms: [1,7],
+    developers: [10120],
+    publishers: [10120],
+    price: {"price":459,"discountPercent":30,"isFeatured":false},
+  },
+  {
+    id: 1013,
+    slug: "kingdom-of-ash",
+    name: "Kingdom of Ash",
+    released: "2024-07-19",
+    rating: 4.5,
+    ratingsCount: 6080,
+    added: 6080,
+    metacritic: 86,
+    description: "สร้างอาณาจักรใหม่จากเถ้าถ่านของสงคราม บริหารเมือง ทูตสัมพันธ์ และกองทัพ\n\nเนื้อเรื่องแตกแขนงตามการตัดสินใจทางการเมือง",
+    genres: [5,10],
+    platforms: [1,2],
+    developers: [10040],
+    publishers: [10041],
+    price: {"price":1090,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1014,
+    slug: "turbo-tanks",
+    name: "Turbo Tanks",
+    released: "2022-06-03",
+    rating: 3.7,
+    ratingsCount: 2210,
+    added: 2210,
+    metacritic: 68,
+    description: "แข่งรถถังจิ๋วพร้อมยิงกันกลางสนาม เล่นกับเพื่อนแบบแบ่งจอได้ 4 คน",
+    genres: [4,1],
+    platforms: [1,3,7],
+    developers: [10140],
+    publishers: [10140],
+    price: {"price":199,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1015,
+    slug: "last-light-protocol",
+    name: "Last Light Protocol",
+    released: "2025-04-22",
+    rating: 4.2,
+    ratingsCount: 4960,
+    added: 4960,
+    metacritic: 80,
+    description: "ยิงแนวแทกติกในโลกหลังหายนะ วางแผนบุกฐานพร้อมทีม 4 คน\n\nทุกภารกิจสุ่มแผนผังและตำแหน่งศัตรูใหม่",
+    genres: [2],
+    platforms: [1,2,3],
+    developers: [10100],
+    publishers: [10011],
+    price: {"price":1290,"discountPercent":40,"isFeatured":false},
+  },
+  {
+    id: 1016,
+    slug: "garden-spirits",
+    name: "Garden Spirits",
+    released: "2024-03-11",
+    rating: 4,
+    ratingsCount: 2780,
+    added: 2780,
+    metacritic: 76,
+    description: "ปลุกวิญญาณแห่งสวนด้วยการแก้ปริศนาพืชพรรณ เกมสั้นสบาย ๆ เล่นจบใน 6 ชั่วโมง",
+    genres: [3,7],
+    platforms: [1,7,4,8],
+    developers: [10030],
+    publishers: [10030],
+    price: {"price":259,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1017,
+    slug: "fist-of-the-tiger",
+    name: "Fist of the Tiger",
+    released: "2023-09-29",
+    rating: 4.1,
+    ratingsCount: 3340,
+    added: 3340,
+    metacritic: 78,
+    description: "ต่อสู้แบบดั้งเดิม 1 ต่อ 1 ตัวละคร 20 สไตล์การต่อสู้ รองรับระบบ rollback netcode",
+    genres: [6],
+    platforms: [2,3,1],
+    developers: [10170],
+    publishers: [10170],
+    price: {"price":690,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1018,
+    slug: "deep-sea-colony",
+    name: "Deep Sea Colony",
+    released: "2025-02-27",
+    rating: 4.3,
+    ratingsCount: 3610,
+    added: 3610,
+    metacritic: 84,
+    description: "สร้างเมืองใต้ทะเลลึก บริหารออกซิเจน พลังงาน และอาหารให้ประชากรอยู่รอด",
+    genres: [14,10],
+    platforms: [1],
+    developers: [10080],
+    publishers: [10080],
+    price: {"price":549,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1019,
+    slug: "wildfang",
+    name: "Wildfang",
+    released: "2024-12-06",
+    rating: 4.5,
+    ratingsCount: 8020,
+    added: 8020,
+    metacritic: 85,
+    description: "ล่าสัตว์ประหลาดในป่าดึกดำบรรพ์ สร้างอาวุธจากวัตถุดิบที่ล่าได้\n\nเล่นคนเดียวหรือร่วมทีมออนไลน์ได้ 4 คน",
+    genres: [4,3],
+    platforms: [1,2,3],
+    developers: [10070],
+    publishers: [10041],
+    price: {"price":1490,"discountPercent":15,"isFeatured":false},
+  },
+  {
+    id: 1020,
+    slug: "paper-knights",
+    name: "Paper Knights",
+    released: "2023-02-14",
+    rating: 4.4,
+    ratingsCount: 4650,
+    added: 4650,
+    metacritic: 83,
+    description: "RPG ผลัดตาในโลกกระดาษพับ ตัวละครทุกตัวพับและฉีกได้จริงในการต่อสู้",
+    genres: [5,51],
+    platforms: [1,7],
+    developers: [10050],
+    publishers: [10050],
+    price: {"price":389,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1021,
+    slug: "rally-kings",
+    name: "Rally Kings",
+    released: "2022-11-18",
+    rating: 3.8,
+    ratingsCount: 2930,
+    added: 2930,
+    metacritic: 71,
+    description: "แข่งแรลลีบนเส้นทางจริงทั่วโลก ฝุ่น หิมะ และโคลน มีระบบความเสียหายของรถ",
+    genres: [1,15],
+    platforms: [1,2,3],
+    developers: [10020],
+    publishers: [10020],
+    price: {"price":790,"discountPercent":50,"isFeatured":false},
+  },
+  {
+    id: 1022,
+    slug: "arcane-academy",
+    name: "Arcane Academy",
+    released: "2025-09-12",
+    rating: 4.2,
+    ratingsCount: 3180,
+    added: 3180,
+    metacritic: 80,
+    description: "ใช้ชีวิตนักเรียนในโรงเรียนเวทมนตร์ เรียน ผูกมิตร และไขความลับของโรงเรียน",
+    genres: [5,14],
+    platforms: [1,7],
+    developers: [10110],
+    publishers: [10110],
+    price: {"price":619,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1023,
+    slug: "block-breakers",
+    name: "Block Breakers",
+    released: "2022-03-30",
+    rating: 3.6,
+    ratingsCount: 1960,
+    added: 1960,
+    metacritic: null,
+    description: "เกมพัซเซิลเรียงบล็อกเล่นฟรี มีภารกิจรายวันและแข่งคะแนนกับเพื่อน",
+    genres: [7],
+    platforms: [4,8,7,1],
+    developers: [10140],
+    publishers: [10140],
+    price: {"price":0,"discountPercent":0,"isFeatured":false},
+  },
+  {
+    id: 1024,
+    slug: "glacier-run",
+    name: "Glacier Run",
+    released: "2024-01-25",
+    rating: 4.1,
+    ratingsCount: 2540,
+    added: 2540,
+    metacritic: 79,
+    description: "เพนกวินนักผจญภัยไถลลงธารน้ำแข็ง 80 ด่าน ควบคุมง่ายแต่เชี่ยวชาญยาก",
+    genres: [83,51],
+    platforms: [1,7,4],
+    developers: [10120],
+    publishers: [10120],
+    price: {"price":229,"discountPercent":0,"isFeatured":false},
+  },
+]
+
+/**
+ * ผู้ใช้ตัวอย่างพร้อมคอลเลกชันของแต่ละคน (ใช้ล็อกอินทดสอบได้เลย)
+ * รหัสผ่านแบบง่ายสำหรับการบ้านเท่านั้น ในฐานข้อมูลเก็บเป็น hash ไม่ใช่รหัสจริง
+ */
+const users = [
+  {
+    email: 'demo@gamenight.test',
+    name: 'Demo Player',
+    password: '1234',
+    wishlist: [1004, 1012],
+    library: [
+      { gameId: 1002, status: 'playing' as const, myRating: 4 },
+      { gameId: 1005, status: 'finished' as const, myRating: 5 },
+    ],
+  },
+  {
+    email: 'mai@gamenight.test',
+    name: 'Mai',
+    password: '1234',
+    wishlist: [1001, 1007, 1019],
+    library: [{ gameId: 1003, status: 'unplayed' as const, myRating: 0 }],
+  },
+]
+
+/**
+ * ภาพปก + ภาพหน้าจอ 4 ภาพต่อเกม เป็นไฟล์ SVG ใน frontend/public/covers/
+ * (สร้างด้วย node scripts/generate-covers.mjs) ปก = /covers/<slug>.svg, ภาพหน้าจอ = /covers/<slug>-<n>.svg
+ */
+const SCREENSHOTS_PER_GAME = 4
+
+// ใส่ id เองตอน seed แล้วต้องเลื่อน sequence ต่อจากค่าสูงสุด ไม่อย่างนั้นการ POST ครั้งแรกจะชน id เดิม
+const SERIAL_TABLES = ['Genre', 'Platform', 'Company', 'Game', 'Price', 'Screenshot', 'User', 'WishlistItem', 'LibraryItem']
+
+async function main() {
+  // ล้างทุกตารางและรีเซ็ต id ให้เริ่มใหม่
+  await prisma.$executeRawUnsafe(
+    `TRUNCATE ${SERIAL_TABLES.map((t) => `"${t}"`).join(", ")} RESTART IDENTITY CASCADE`,
+  )
+
+  await prisma.genre.createMany({ data: genres })
+  await prisma.platform.createMany({ data: platforms })
+  await prisma.company.createMany({ data: companies })
+
+  for (const g of games) {
+    await prisma.game.create({
+      data: {
+        id: g.id,
+        slug: g.slug,
+        name: g.name,
+        released: g.released ? new Date(g.released) : null,
+        rating: g.rating,
+        ratingsCount: g.ratingsCount,
+        added: g.added,
+        metacritic: g.metacritic,
+        description: g.description,
+        genres: { create: g.genres.map((genreId) => ({ genreId })) },
+        platforms: { create: g.platforms.map((platformId) => ({ platformId })) },
+        developers: { create: g.developers.map((companyId) => ({ companyId })) },
+        publishers: { create: g.publishers.map((companyId) => ({ companyId })) },
+        price: { create: g.price },
+        backgroundImage: `/covers/${g.slug}.svg`,
+        screenshots: {
+          create: Array.from({ length: SCREENSHOTS_PER_GAME }, (_, i) => ({
+            image: `/covers/${g.slug}-${i + 1}.svg`,
+            width: 1200,
+            height: 675,
+          })),
+        },
+      },
+    })
+  }
+
+  for (const u of users) {
+    await prisma.user.create({
+      data: {
+        email: u.email,
+        name: u.name,
+        passwordHash: hashPassword(u.password),
+        wishlist: { create: u.wishlist.map((gameId) => ({ gameId })) },
+        library: { create: u.library },
+      },
+    })
+  }
+
+  for (const table of SERIAL_TABLES) {
+    await prisma.$executeRawUnsafe(
+      `SELECT setval(pg_get_serial_sequence('"${table}"', 'id'), COALESCE((SELECT MAX(id) FROM "${table}"), 0) + 1, false)`,
+    )
+  }
+
+  console.log(
+    `Seed เสร็จ: ${genres.length} แนวเกม, ${platforms.length} แพลตฟอร์ม, ${companies.length} บริษัท, ${games.length} เกม, ${users.length} ผู้ใช้`,
+  )
+}
+
+main()
+  .catch((e) => {
+    console.error(e)
+    process.exitCode = 1
+  })
+  .finally(() => prisma.$disconnect())

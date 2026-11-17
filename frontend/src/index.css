@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/* daisyUI: คอมโพเนนต์ (btn, card, badge, select, tabs ฯลฯ) ใช้ร่วมกับ Tailwind utility */
+@plugin "daisyui" {
+  themes: false;
+  logs: false;
+}
+
+/* ธีมของร้าน (โทนมืดแนว Steam) ทุกคอมโพเนนต์ daisyUI ดึงสีจากตรงนี้ */
+@plugin "daisyui/theme" {
+  name: "gamenight";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: #0e1621;
+  --color-base-200: #1b2838;
+  --color-base-300: #2a3646;
+  --color-base-content: #e6edf3;
+
+  --color-primary: #66c0f4;
+  --color-primary-content: #0e1621;
+  --color-secondary: #2a475e;
+  --color-secondary-content: #e6edf3;
+  --color-accent: #a6dcfa;
+  --color-accent-content: #0e1621;
+  --color-neutral: #171d25;
+  --color-neutral-content: #e6edf3;
+
+  --color-info: #66c0f4;
+  --color-info-content: #0e1621;
+  --color-success: #6cb33f;
+  --color-success-content: #0e1621;
+  --color-warning: #fcd34d;
+  --color-warning-content: #0e1621;
+  --color-error: #f87171;
+  --color-error-content: #0e1621;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  /* ปุ่ม ช่องกรอก และแท็บสูง 44px (เป้าสัมผัสขั้นต่ำสำหรับมือถือ) */
+  --size-selector: 0.25rem;
+  --size-field: 0.275rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* สีเฉพาะของร้านที่ daisyUI ไม่มีให้ */
+@theme {
+  --font-sans: "IBM Plex Sans Thai", system-ui, sans-serif;
+  --font-display: "Kanit", "IBM Plex Sans Thai", sans-serif;
+
+  --color-slate: #2a475e;
+  --color-panel-hover: #213247;
+  --color-primary-soft: #a6dcfa;
+  --color-sub: #b8c4ce;
+  --color-chip: #c7d5e0;
+  --color-muted: #8f98a0;
+  --color-deal: #4c6b22;
+  --color-deal-fg: #d9f99d;
+  --color-star: #fcd34d;
+  --color-meta: #86efac;
+}
+
+html {
+  background: var(--color-base-100);
+}
+
+body {
+  margin: 0;
+  background: var(--color-base-100);
+  color: var(--color-base-content);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.toast-in { animation: toast-in 0.2s ease-out; }
+
+@keyframes pop {
+  0% { transform: scale(0.96); opacity: 0; }
+  100% { transform: none; opacity: 1; }
+}
+.pop-in { animation: pop 0.25s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

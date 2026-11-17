@@ -1,0 +1,11 @@
+node_modules
+.DS_Store
+.env
+.env.local
+dist
+
+# ไฟล์ตั้งค่าเฉพาะเครื่อง
+.claude/launch.json
+
+# ไฟล์ส่งงาน (ไม่ใช่โค้ด)
+*.pdf

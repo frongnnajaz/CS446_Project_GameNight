@@ -1,0 +1,176 @@
+// Prisma schema ของ Game Night
+// โครงสร้างแยกจากข้อมูล API เดิม (RAWG + Mock API ราคา + คอลเลกชันของผู้ใช้) เป็นตารางที่สัมพันธ์กัน
+// ข้อมูลตัวอย่างอยู่ใน prisma/seed.ts
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// แนวเกม เช่น Action, RPG
+model Genre {
+  id    Int         @id @default(autoincrement())
+  name  String
+  slug  String      @unique
+  games GameGenre[]
+}
+
+/// แพลตฟอร์มหลัก เช่น PC, PlayStation
+model Platform {
+  id    Int            @id @default(autoincrement())
+  name  String
+  slug  String         @unique
+  games GamePlatform[]
+}
+
+/// บริษัทผู้พัฒนา/ผู้จัดจำหน่าย (ตารางเดียวกัน แยกบทบาทด้วยตารางเชื่อม)
+model Company {
+  id        Int             @id @default(autoincrement())
+  name      String          @unique
+  developed GameDeveloper[]
+  published GamePublisher[]
+}
+
+model Game {
+  id              Int       @id @default(autoincrement())
+  slug            String    @unique
+  name            String
+  released        DateTime? @db.Date
+  rating          Float     @default(0)
+  ratingsCount    Int       @default(0) @map("ratings_count")
+  added           Int       @default(0)
+  metacritic      Int?
+  backgroundImage String?   @map("background_image")
+  description     String    @default("")
+  website         String    @default("")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  genres      GameGenre[]
+  platforms   GamePlatform[]
+  developers  GameDeveloper[]
+  publishers  GamePublisher[]
+  price       Price?
+  screenshots Screenshot[]
+  wishlist    WishlistItem[]
+  library     LibraryItem[]
+
+  @@index([name])
+}
+
+model GameGenre {
+  gameId  Int
+  genreId Int
+  game    Game  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  genre   Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, genreId])
+}
+
+model GamePlatform {
+  gameId     Int
+  platformId Int
+  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  platform   Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, platformId])
+}
+
+model GameDeveloper {
+  gameId    Int
+  companyId Int
+  game      Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, companyId])
+}
+
+model GamePublisher {
+  gameId    Int
+  companyId Int
+  game      Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@id([gameId, companyId])
+}
+
+/// ราคาขาย 1 เกมมี 1 ราคา (price = 0 คือเกมฟรี)
+model Price {
+  id              Int     @id @default(autoincrement())
+  gameId          Int     @unique
+  price           Int     @default(0)
+  discountPercent Int     @default(0)
+  isFeatured      Boolean @default(false)
+  game            Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+}
+
+model Screenshot {
+  id     Int     @id @default(autoincrement())
+  gameId Int
+  image  String?
+  width  Int?
+  height Int?
+  game   Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+}
+
+/// ผู้ใช้ ระบุตัวตนด้วยอีเมล + รหัสผ่าน
+model User {
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  name         String         @default("")
+  /// รหัสผ่านที่ผ่าน scrypt แล้ว (รูปแบบ salt:hash) ไม่เก็บรหัสผ่านจริง
+  passwordHash String
+  createdAt    DateTime       @default(now())
+  sessions     Session[]
+  wishlist     WishlistItem[]
+  library      LibraryItem[]
+}
+
+/// session ที่ได้หลังล็อกอิน Frontend ส่ง token มาใน header Authorization: Bearer <token>
+model Session {
+  token     String   @id
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Wishlist ของผู้ใช้แต่ละคน (เกมหนึ่งอยู่ใน Wishlist ของผู้ใช้คนเดิมได้ครั้งเดียว)
+model WishlistItem {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  gameId  Int
+  addedAt DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game    Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gameId])
+}
+
+enum PlayStatus {
+  unplayed
+  playing
+  finished
+}
+
+/// คลังเกมที่ "ซื้อ" แล้วของผู้ใช้แต่ละคน
+model LibraryItem {
+  id          Int        @id @default(autoincrement())
+  userId      Int
+  gameId      Int
+  status      PlayStatus @default(unplayed)
+  myRating    Int        @default(0)
+  purchasedAt DateTime   @default(now())
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game        Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gameId])
+}
