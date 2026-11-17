@@ -383,10 +383,13 @@ function GameForm({ initial, id, onDone }: { initial: GameInput; id: number | nu
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="URL ภาพปก">
           <input
-            type="url"
+            type="text"
+            inputMode="url"
+            pattern="(https?://|/).*"
+            title="ใส่ URL เต็ม (https://...) หรือ path ในเว็บ เช่น /covers/ชื่อเกม.svg"
             value={f.background_image ?? ''}
             onChange={(e) => set('background_image', e.target.value)}
-            placeholder="https://..."
+            placeholder="https://... หรือ /covers/..."
             className="input w-full"
           />
         </Field>

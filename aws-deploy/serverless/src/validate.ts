@@ -44,7 +44,10 @@ const gameFields = {
   ratings_count: z.number().int().min(0),
   added: z.number().int().min(0),
   metacritic: z.number().int().min(0).max(100).nullable(),
-  background_image: z.union([z.url(), z.literal('').transform(() => null)]).nullable(),
+  // URL เต็ม หรือ path ในเว็บเดียวกัน เช่น /covers/<slug>.svg (ข้อมูลตัวอย่างใช้แบบนี้)
+  background_image: z
+    .union([z.url(), z.string().trim().regex(/^\/[^\s]*$/, 'ใส่ URL เต็ม หรือ path ที่ขึ้นต้นด้วย /'), z.literal('').transform(() => null)])
+    .nullable(),
   description_raw: z.string().max(20_000),
   website: z.union([z.url(), z.literal('')]),
   genreIds: ids,
