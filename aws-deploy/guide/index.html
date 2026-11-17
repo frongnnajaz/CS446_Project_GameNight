@@ -1,0 +1,433 @@
+<title>คู่มือ Game Night Serverless</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column of step cards on a night-sky ground, figures inside the steps they illustrate */
+:root{
+  --bg:#0c1220; --surface:#131c2e; --surface-2:#1a2539; --line:#26324a;
+  --fg:#e6ecf5; --muted:#9aa8bf; --accent:#5cc8ff; --accent-ink:#06243a;
+  --step:#ff9f43; --ok:#4ade80; --warn:#fbbf24; --code-bg:#0a0f1a; --code-fg:#d6e2f3;
+  --shadow:0 1px 0 rgba(255,255,255,.03) inset;
+  --font-body:"IBM Plex Sans Thai","Leelawadee UI","Noto Sans Thai",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#f3f6fb; --surface:#ffffff; --surface-2:#eef3fa; --line:#d8e0ec;
+  --fg:#152036; --muted:#55627a; --accent:#0b7fc0; --accent-ink:#ffffff;
+  --step:#c9620a; --ok:#15803d; --warn:#a16207; --code-bg:#0f172a; --code-fg:#dbe7f7;
+  color-scheme:light; } }
+:root[data-theme="light"]{
+  --bg:#f3f6fb; --surface:#ffffff; --surface-2:#eef3fa; --line:#d8e0ec;
+  --fg:#152036; --muted:#55627a; --accent:#0b7fc0; --accent-ink:#ffffff;
+  --step:#c9620a; --ok:#15803d; --warn:#a16207; --code-bg:#0f172a; --code-fg:#dbe7f7;
+  color-scheme:light; }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.75;margin:0}
+.wrap{max-width:980px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{text-wrap:balance;line-height:1.3;margin:0}
+h1{font-size:clamp(26px,4vw,36px);font-weight:700}
+h2{font-size:22px;font-weight:700}
+h3{font-size:17px;font-weight:600;margin-top:6px}
+p{margin:0}
+a{color:var(--accent)}
+code,kbd{font-family:var(--font-mono);font-size:.88em}
+:not(pre)>code{background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--accent);word-break:break-word}
+kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--surface-2)}
+b,strong{font-weight:600;color:var(--fg)}
+
+.hero{display:flex;flex-direction:column;gap:12px;padding:28px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.badge{align-self:flex-start;font-size:13px;font-weight:600;letter-spacing:.02em;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:3px 12px}
+.sub{color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:14px}
+.meta a{word-break:break-all}
+
+.card{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:26px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.card>h2{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.num{font-family:var(--font-mono);font-size:14px;font-weight:500;color:var(--step);border:1px solid var(--step);border-radius:6px;padding:0 8px;flex-shrink:0}
+.svc{font-size:14px;font-weight:500;color:var(--muted)}
+
+ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
+ol.steps>li::marker{color:var(--step);font-weight:600}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+li{min-width:0}
+
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-top:6px}
+.kv dt{color:var(--muted);font-size:14px}
+.kv dd{margin:0;min-width:0;word-break:break-word}
+
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface-2);font-weight:600;font-size:14px;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-variant-numeric:tabular-nums;color:var(--muted)}
+
+.code{position:relative;background:var(--code-bg);border-radius:10px;border:1px solid var(--line);min-width:0}
+.code .bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 8px 6px 14px;border-bottom:1px solid rgba(255,255,255,.08);color:#93a3bd;font-size:13px;font-family:var(--font-mono)}
+.code pre{margin:0;padding:14px;overflow-x:auto;color:var(--code-fg);font-family:var(--font-mono);font-size:13.5px;line-height:1.6}
+.copy{font:inherit;font-size:13px;color:#e6ecf5;background:#22314a;border:1px solid #33476a;border-radius:6px;padding:3px 10px;cursor:pointer}
+.copy:hover{background:#2b3e5d}
+.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+figure{margin:4px 0 0;display:flex;flex-direction:column;gap:8px}
+figure img{display:block;width:100%;border-radius:10px;border:1px solid var(--line)}
+figcaption{font-size:14px;color:var(--muted)}
+.shot-slot{border:1.5px dashed var(--line);border-radius:10px;padding:16px 18px;color:var(--muted);font-size:14px;background:var(--surface-2)}
+.shot-slot b{color:var(--muted)}
+
+.note{border-left:3px solid var(--warn);background:var(--surface-2);border-radius:0 10px 10px 0;padding:12px 16px;font-size:15px}
+.note.ok{border-left-color:var(--ok)}
+.note .t{font-weight:600;color:var(--warn);margin-right:6px}
+.note.ok .t{color:var(--ok)}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.toc{display:flex;flex-wrap:wrap;gap:8px}
+.toc a{font-size:14px;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;color:var(--fg);background:var(--surface-2)}
+.toc a:hover{border-color:var(--accent)}
+.toc a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+@page{size:A4;margin:14mm 12mm}
+@media print{
+  :root{--bg:#ffffff;--surface:#ffffff;--surface-2:#f2f5fa;--line:#d4dbe7;--fg:#152036;--muted:#4f5c73;--accent:#0b6fa8;--accent-ink:#ffffff;--step:#c25a06;--ok:#15803d;--warn:#a16207;color-scheme:light}
+  body{font-size:12.5px;line-height:1.6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wrap{max-width:none;padding:0;gap:14px}
+  .toc,.copy{display:none}
+  .hero,.card{padding:16px;border-radius:8px}
+  .card{break-inside:auto}
+  h2,h3{break-after:avoid}
+  figure,.code,.note,.shot-slot,.kv,tr,ol.steps>li{break-inside:avoid}
+  .code pre{white-space:pre-wrap;word-break:break-word;font-size:11px}
+  table{min-width:0;font-size:12px}
+  .table{overflow:visible}
+  .grid2{grid-template-columns:1fr 1fr}
+  a{color:var(--accent);text-decoration:none}
+}
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <span class="badge">Serverless · 7 AWS Services · Event-driven + Scheduled</span>
+  <h1>คู่มือติดตั้งและลบระบบ Game Night บน AWS (แบบ Serverless)</h1>
+  <p class="sub">CS446 Cloud Computing · ร้านเกม Game Night: ดูเกม สะสม Wishlist และรับอีเมลแจ้งเตือนอัตโนมัติเมื่อเกมใน Wishlist ลดราคา ทำใน AWS Academy Learner Lab ภูมิภาค <code>us-east-1</code></p>
+  <div class="meta">
+    <span>เว็บที่ขึ้นจริง: <a href="https://main.d2yvjayx2tsoci.amplifyapp.com/" target="_blank" rel="noopener">main.d2yvjayx2tsoci.amplifyapp.com</a></span>
+    <span>API: <code>https://qll966s60h.execute-api.us-east-1.amazonaws.com/api</code></span>
+  </div>
+  <nav class="toc" aria-label="สารบัญ">
+    <a href="#overview">ภาพรวม</a><a href="#prep">เตรียมไฟล์</a><a href="#sns">1 SNS</a><a href="#s3">2 S3</a><a href="#dynamodb">3 DynamoDB</a><a href="#lambda-api">4 Lambda API</a><a href="#lambda-deals">5 Lambda Deals</a><a href="#apigw">6 API Gateway</a><a href="#seed">7 ข้อมูลตัวอย่าง</a><a href="#amplify">8 Amplify</a><a href="#eventbridge">9 EventBridge</a><a href="#test">10 ทดสอบ</a><a href="#trouble">ตรวจปัญหา</a><a href="#cleanup">ลบระบบ</a>
+  </nav>
+</header>
+
+<section class="card" id="overview">
+  <h2>ภาพรวมบริการ AWS ที่ใช้ (7 บริการ)</h2>
+  <p>ระบบทำงานแบบ serverless ทั้งหมด ไม่มีเครื่อง EC2 หรือฐานข้อมูลที่เปิดค้างไว้ จ่ายตามการใช้งานจริง แบ่งเป็น 2 เส้นทาง: <b>เส้นทาง A</b> ตรวจเกมลดราคาอัตโนมัติทุก 1 ชั่วโมง และ <b>เส้นทาง B</b> ผู้ใช้เปิดเว็บ ดูเกม สะสม Wishlist และกดสมัครรับแจ้งเตือน</p>
+  <figure>
+    <img src="img/architecture.png" alt="แผนภาพสถาปัตยกรรม Game Night แบบ serverless: EventBridge, Lambda, S3, DynamoDB, SNS, Amplify, API Gateway" loading="lazy">
+    <figcaption>แผนภาพสถาปัตยกรรม เส้นสีส้มคือเส้นทาง A (อัตโนมัติ) เส้นสีน้ำเงินคือเส้นทาง B (ผู้ใช้)</figcaption>
+  </figure>
+  <div class="table"><table>
+    <thead><tr><th>ลำดับ</th><th>AWS Service</th><th>ชื่อ resource</th><th>หน้าที่ในระบบ</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><b>Amazon SNS</b></td><td><code>gamenight-deals</code></td><td>ส่งอีเมลแจ้งเตือนเกมลดราคา ใช้ filter policy ให้แต่ละคนได้เฉพาะเกมของตัวเอง</td></tr>
+      <tr><td>2</td><td><b>Amazon S3</b></td><td><code>gamenight-config-…</code></td><td>เก็บ <code>config.json</code> (เกณฑ์ส่วนลด) และ <code>logs/</code> ผลการตรวจแต่ละรอบ</td></tr>
+      <tr><td>3</td><td><b>Amazon DynamoDB</b></td><td>6 ตาราง <code>gamenight-*</code></td><td>เก็บเกม แนวเกม ผู้ใช้ session Wishlist คลังเกม</td></tr>
+      <tr><td>4</td><td><b>AWS Lambda</b></td><td><code>gamenight-api</code>, <code>gamenight-deals</code></td><td>ตัวแรกเป็น REST API (Express) ตัวที่สองตรวจราคาแล้วส่งแจ้งเตือน</td></tr>
+      <tr><td>5</td><td><b>Amazon API Gateway</b></td><td><code>gamenight-http-api</code></td><td>HTTP API รับทุก request <code>/api/*</code> จากหน้าเว็บ ส่งต่อให้ Lambda</td></tr>
+      <tr><td>6</td><td><b>AWS Amplify</b></td><td><code>gamenight-web</code></td><td>โฮสต์หน้าเว็บ React แบบ https พร้อม CDN</td></tr>
+      <tr><td>7</td><td><b>Amazon EventBridge</b></td><td><code>gamenight-hourly</code></td><td>ตั้งเวลา <code>rate(1 hour)</code> สั่ง Lambda ตรวจราคา</td></tr>
+    </tbody>
+  </table></div>
+  <p class="sub">ทุก Lambda ใช้ IAM role <code>LabRole</code> ที่ Learner Lab เตรียมไว้ และเขียน log ลง CloudWatch Logs อัตโนมัติ</p>
+</section>
+
+<section class="card" id="prep">
+  <h2><span class="num">0</span>เตรียมตัวและเตรียมไฟล์</h2>
+  <ol class="steps">
+    <li>เข้า AWS Academy → Learner Lab → กด <b>Start Lab</b> รอจนจุดหน้าคำว่า AWS เป็น<b>สีเขียว</b> แล้วคลิก <b>AWS</b> เพื่อเปิด Console</li>
+    <li>มุมขวาบนของ Console ตรวจว่า Region เป็น <b>N. Virginia (us-east-1)</b> ทุกขั้นตอนต้องอยู่ region นี้</li>
+    <li>ในเครื่อง ติดตั้ง <b>Node.js 22</b> แล้ว build โค้ด Lambda ทั้ง 2 ตัว (โฟลเดอร์ <code>aws-deploy/serverless</code>)</li>
+  </ol>
+  <div class="code"><div class="bar"><span>Terminal · build Lambda</span><button class="copy" type="button">Copy</button></div><pre>cd aws-deploy/serverless
+npm install
+npm run build
+# ได้ไฟล์ dist/api.zip (Lambda gamenight-api) และ dist/deals.zip (Lambda gamenight-deals)</pre></div>
+  <div class="note"><span class="t">จดไว้ใน Notepad</span>ระหว่างทำจะได้ค่าที่ต้องใช้ข้ามขั้นตอน 4 ค่า: <b>Topic ARN</b> (ขั้น 1), <b>ชื่อ Bucket</b> (ขั้น 2), <b>Invoke URL</b> ของ API (ขั้น 6) และ <b>โดเมน Amplify</b> (ขั้น 8)</div>
+</section>
+
+<section class="card" id="sns">
+  <h2><span class="num">1</span>สร้างระบบแจ้งเตือน <span class="svc">Amazon SNS</span></h2>
+  <ol class="steps">
+    <li>ช่องค้นหาด้านบนของ Console พิมพ์ <code>SNS</code> แล้วคลิก <b>Simple Notification Service</b></li>
+    <li>เมนูซ้ายคลิก <b>Topics</b> → ปุ่ม <b>Create topic</b></li>
+    <li>ตั้งค่า:
+      <dl class="kv"><dt>Type</dt><dd><b>Standard</b></dd><dt>Name</dt><dd><code>gamenight-deals</code></dd></dl>
+    </li>
+    <li>เลื่อนลงล่างสุด คลิก <b>Create topic</b></li>
+    <li>หน้ารายละเอียด topic กดปุ่ม Copy ข้างค่า <b>ARN</b> (หน้าตา <code>arn:aws:sns:us-east-1:xxxxxxxxxxxx:gamenight-deals</code>) เก็บไว้ใน Notepad</li>
+  </ol>
+  <div class="note ok"><span class="t">ไม่ต้องสร้าง Subscription เอง</span>ระบบนี้ให้ผู้ใช้กดปุ่ม "เปิดแจ้งเตือนลดราคา" บนหน้าเว็บ แล้ว Lambda จะ subscribe อีเมลของผู้ใช้พร้อม filter policy <code>{"email":["อีเมลผู้ใช้"]}</code> ให้เอง</div>
+  <div class="shot-slot"><b>ภาพ Console:</b> หน้า Create topic ที่เลือก Standard และกรอกชื่อ gamenight-deals · หน้ารายละเอียด topic ที่เห็นค่า ARN</div>
+</section>
+
+<section class="card" id="s3">
+  <h2><span class="num">2</span>สร้างที่เก็บเกณฑ์และ log <span class="svc">Amazon S3</span></h2>
+  <ol class="steps">
+    <li>ช่องค้นหาพิมพ์ <code>S3</code> → คลิก <b>Create bucket</b></li>
+    <li>ตั้งค่า:
+      <dl class="kv"><dt>Bucket type</dt><dd>General purpose</dd><dt>Bucket name</dt><dd><code>gamenight-config-ชื่อกลุ่ม</code> (ตัวพิมพ์เล็กทั้งหมด ห้ามซ้ำกับคนอื่นทั่วโลก)</dd><dt>Block all Public Access</dt><dd>ติ๊กไว้เหมือนเดิม (bucket นี้ไม่ต้องเปิด public)</dd></dl>
+    </li>
+    <li>เลื่อนลงล่างสุดคลิก <b>Create bucket</b> แล้วจดชื่อ bucket ไว้</li>
+    <li>คลิกเข้า bucket → <b>Upload</b> → <b>Add files</b> เลือกไฟล์ <code>config.json</code> ที่มีเนื้อหาด้านล่าง → <b>Upload</b></li>
+  </ol>
+  <div class="code"><div class="bar"><span>config.json</span><button class="copy" type="button">Copy</button></div><pre>{ "minDiscountPercent": 10 }</pre></div>
+  <p class="sub">เกมต้องลดราคาอย่างน้อย 10% ถึงจะส่งอีเมล แก้เลขในไฟล์นี้แล้วอัปโหลดทับได้โดยไม่ต้องแก้โค้ด โฟลเดอร์ <code>logs/</code> Lambda จะสร้างให้เองตอนรันครั้งแรก</p>
+  <div class="shot-slot"><b>ภาพ Console:</b> หน้า Create bucket ที่กรอกชื่อ · หน้า Objects ของ bucket ที่มี config.json และโฟลเดอร์ logs/</div>
+</section>
+
+<section class="card" id="dynamodb">
+  <h2><span class="num">3</span>สร้างฐานข้อมูล <span class="svc">Amazon DynamoDB</span></h2>
+  <ol class="steps">
+    <li>ช่องค้นหาพิมพ์ <code>DynamoDB</code> → เมนูซ้าย <b>Tables</b> → <b>Create table</b></li>
+    <li>สร้างทั้งหมด <b>6 ตาราง</b> ตามตารางด้านล่าง กรอกให้ตรงทุกตัวอักษร ช่องชนิดข้อมูลด้านขวาของ key เลือก String หรือ Number ตามตาราง</li>
+    <li>ส่วน <b>Table settings</b> ใช้ <b>Default settings</b> (On-demand) แล้วคลิก <b>Create table</b> รอจนสถานะเป็น <b>Active</b></li>
+  </ol>
+  <div class="table"><table>
+    <thead><tr><th>#</th><th>Table name</th><th>Partition key</th><th>Sort key</th><th>เก็บอะไร</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><code>gamenight-games</code></td><td><code>id</code> · Number</td><td>-</td><td>ข้อมูลเกม ราคา ภาพหน้าจอ</td></tr>
+      <tr><td>2</td><td><code>gamenight-lookups</code></td><td><code>kind</code> · String</td><td><code>id</code> · Number</td><td>แนวเกม แพลตฟอร์ม บริษัท</td></tr>
+      <tr><td>3</td><td><code>gamenight-users</code></td><td><code>email</code> · String</td><td>-</td><td>ผู้ใช้และรหัสผ่านที่ hash แล้ว</td></tr>
+      <tr><td>4</td><td><code>gamenight-sessions</code></td><td><code>token</code> · String</td><td>-</td><td>session หลังล็อกอิน</td></tr>
+      <tr><td>5</td><td><code>gamenight-collections</code></td><td><code>userId</code> · Number</td><td><code>sk</code> · String</td><td>Wishlist และคลังเกมของแต่ละคน</td></tr>
+      <tr><td>6</td><td><code>gamenight-counters</code></td><td><code>name</code> · String</td><td>-</td><td>เลข id ถัดไป</td></tr>
+    </tbody>
+  </table></div>
+  <h3>เปิด TTL ให้ session หมดอายุเอง</h3>
+  <ol class="steps">
+    <li>คลิกตาราง <code>gamenight-sessions</code> → แท็บ <b>Additional settings</b> → ส่วน Time to Live (TTL) คลิก <b>Turn on</b></li>
+    <li>ช่อง <b>TTL attribute name</b> พิมพ์ <code>ttl</code> → <b>Turn on TTL</b></li>
+  </ol>
+  <div class="shot-slot"><b>ภาพ Console:</b> หน้า Create table ของ gamenight-collections (มีทั้ง partition key และ sort key) · หน้า Tables ที่เห็นครบ 6 ตาราง สถานะ Active</div>
+</section>
+
+<section class="card" id="lambda-api">
+  <h2><span class="num">4</span>สร้าง API หลัก <span class="svc">AWS Lambda · gamenight-api</span></h2>
+  <ol class="steps">
+    <li>ช่องค้นหาพิมพ์ <code>Lambda</code> → <b>Create function</b> → เลือก <b>Author from scratch</b></li>
+    <li>ตั้งค่า:
+      <dl class="kv"><dt>Function name</dt><dd><code>gamenight-api</code></dd><dt>Runtime</dt><dd><b>Node.js 22.x</b></dd><dt>Architecture</dt><dd>x86_64</dd></dl>
+    </li>
+    <li><b>จุดสำคัญของ Learner Lab:</b> เปิดส่วน <b>Change default execution role</b> → เลือก <b>Use an existing role</b> → ช่อง Existing role เลือก <code>LabRole</code></li>
+    <li>คลิก <b>Create function</b></li>
+    <li>แท็บ <b>Code</b> → ปุ่ม <b>Upload from</b> → <b>.zip file</b> → เลือก <code>serverless/dist/api.zip</code> → <b>Save</b></li>
+    <li>เลื่อนลงที่ <b>Runtime settings</b> → <b>Edit</b> → ตรวจว่า Handler เป็น <code>index.handler</code></li>
+    <li>แท็บ <b>Configuration</b> → <b>General configuration</b> → <b>Edit</b>: Memory <code>512</code> MB, Timeout <code>0 min 15 sec</code> → <b>Save</b></li>
+    <li>แท็บ <b>Configuration</b> → <b>Environment variables</b> → <b>Edit</b> → <b>Add environment variable</b> 3 แถว → <b>Save</b>
+      <div class="table" style="margin-top:8px"><table>
+        <thead><tr><th>#</th><th>Key</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><code>TOPIC_ARN</code></td><td>ARN จากขั้น 1</td></tr>
+          <tr><td>2</td><td><code>CONFIG_BUCKET</code></td><td>ชื่อ bucket จากขั้น 2</td></tr>
+          <tr><td>3</td><td><code>SITE_URL</code></td><td>โดเมน Amplify จากขั้น 8 (ตอนนี้เว้นไว้ก่อน แล้วกลับมาใส่)</td></tr>
+        </tbody>
+      </table></div>
+    </li>
+  </ol>
+  <div class="note"><span class="t">ทำไมใช้ zip</span>โค้ดเป็น Express + TypeScript ที่ bundle รวมไลบรารีไว้ในไฟล์เดียว (<code>index.mjs</code>) วางโค้ดในหน้าเว็บ Lambda ตรงๆ ไม่ได้ ต้องอัปโหลด zip ส่วน AWS SDK มีอยู่แล้วใน runtime จึงไม่ได้ใส่ไว้ใน zip</div>
+  <div class="shot-slot"><b>ภาพ Console:</b> หน้า Create function ที่เลือก Node.js 22.x และ LabRole · แท็บ Environment variables ที่มี 3 ค่า</div>
+</section>
+
+<section class="card" id="lambda-deals">
+  <h2><span class="num">5</span>สร้างตัวตรวจราคา <span class="svc">AWS Lambda · gamenight-deals</span></h2>
+  <ol class="steps">
+    <li>ทำซ้ำขั้น 4 แต่ใช้ค่าต่อไปนี้
+      <dl class="kv"><dt>Function name</dt><dd><code>gamenight-deals</code></dd><dt>Runtime / Role</dt><dd>Node.js 22.x / <code>LabRole</code></dd><dt>ไฟล์ zip</dt><dd><code>serverless/dist/deals.zip</code></dd><dt>Memory / Timeout</dt><dd><code>256</code> MB / <code>1 min 0 sec</code></dd><dt>Environment variables</dt><dd>3 ค่าเหมือนขั้น 4</dd></dl>
+    </li>
+  </ol>
+  <p>Lambda ตัวนี้ทำงานตามลำดับ: อ่าน <code>config.json</code> จาก S3 → อ่าน Wishlist และราคาเกมจาก DynamoDB → เกมที่ลดถึงเกณฑ์และยังไม่เคยแจ้งที่ส่วนลดนี้ → publish ไป SNS ทีละผู้ใช้พร้อม message attribute <code>email</code> → บันทึกว่าแจ้งแล้ว (กันส่งซ้ำทุกชั่วโมง) → เขียน log ลง S3 <code>logs/</code></p>
+</section>
+
+<section class="card" id="apigw">
+  <h2><span class="num">6</span>สร้าง REST endpoint <span class="svc">Amazon API Gateway</span></h2>
+  <ol class="steps">
+    <li>ช่องค้นหาพิมพ์ <code>API Gateway</code> → ที่การ์ด <b>HTTP API</b> คลิก <b>Build</b></li>
+    <li>คลิก <b>Add integration</b> → เลือก <b>Lambda</b> → Region <code>us-east-1</code> → Lambda function เลือก <code>gamenight-api</code></li>
+    <li>API name พิมพ์ <code>gamenight-http-api</code> → <b>Next</b></li>
+    <li>หน้า Configure routes: Method เลือก <b>ANY</b>, Resource path พิมพ์ <code>$default</code>, Integration target <code>gamenight-api</code> → <b>Next</b></li>
+    <li>หน้า Stages ใช้ <code>$default</code> และ Auto-deploy เปิดไว้ → <b>Next</b> → <b>Create</b></li>
+    <li>คัดลอก <b>Invoke URL</b> (หน้าตา <code>https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com</code>) เก็บไว้</li>
+    <li>ทดสอบ: เปิด <code>&lt;Invoke URL&gt;/api/health</code> ในเบราว์เซอร์ ต้องได้ <code>{"ok":true}</code></li>
+  </ol>
+  <div class="note"><span class="t">ห้ามตั้ง CORS ใน API Gateway</span>เมนู CORS ของ HTTP API ให้ปล่อยว่าง โค้ด Express ตอบ CORS เองอยู่แล้ว ถ้าตั้งที่ API Gateway ด้วย ค่าจะทับกันจนหน้าเว็บเรียก API ไม่ได้</div>
+  <figure>
+    <img src="img/api-games.jpg" alt="ผลลัพธ์ JSON ของ GET /api/games ผ่าน API Gateway" loading="lazy">
+    <figcaption>เปิด <code>&lt;Invoke URL&gt;/api/games?page_size=2</code> หลังใส่ข้อมูลตัวอย่าง (ขั้น 7) จะได้รายการเกมเป็น JSON</figcaption>
+  </figure>
+</section>
+
+<section class="card" id="seed">
+  <h2><span class="num">7</span>ใส่ข้อมูลตัวอย่าง <span class="svc">DynamoDB seed</span></h2>
+  <ol class="steps">
+    <li>หน้า Learner Lab คลิก <b>AWS Details</b> → <b>AWS CLI: Show</b> → คัดลอกข้อความทั้งก้อน</li>
+    <li>วางทับทั้งไฟล์ <code>C:\Users\&lt;ชื่อผู้ใช้&gt;\.aws\credentials</code> (Mac/Linux: <code>~/.aws/credentials</code>) แล้วบันทึก คีย์นี้หมดอายุเมื่อ lab หยุด</li>
+    <li>รันคำสั่ง seed ในโฟลเดอร์ <code>serverless</code> ใส่ 24 เกม 12 แนวเกม 6 แพลตฟอร์ม 16 บริษัท และผู้ใช้ตัวอย่าง 2 คน</li>
+  </ol>
+  <div class="code"><div class="bar"><span>PowerShell · seed</span><button class="copy" type="button">Copy</button></div><pre>cd aws-deploy/serverless
+$env:AWS_REGION="us-east-1"
+npx tsx scripts/seed.ts
+# Seed เสร็จ: 12 แนวเกม, 6 แพลตฟอร์ม, 16 บริษัท, 24 เกม, 2 ผู้ใช้</pre></div>
+  <p class="sub">รันซ้ำได้ ถ้าตารางมีเกมอยู่แล้วจะข้ามให้ ใส่ <code>--force</code> ต่อท้ายถ้าต้องการเขียนทับ บัญชีตัวอย่างคือ <code>demo@gamenight.test</code> และ <code>mai@gamenight.test</code> รหัสผ่านอยู่ใน <code>scripts/seed-data.ts</code></p>
+</section>
+
+<section class="card" id="amplify">
+  <h2><span class="num">8</span>โฮสต์หน้าเว็บ <span class="svc">AWS Amplify</span></h2>
+  <h3>8.1 Build หน้าเว็บให้ชี้ไปที่ API</h3>
+  <div class="code"><div class="bar"><span>PowerShell · build frontend</span><button class="copy" type="button">Copy</button></div><pre>cd aws-deploy/repo/frontend
+npm install
+$env:VITE_API_URL="https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/api"   # Invoke URL จากขั้น 6 + /api
+npm run build</pre></div>
+  <p>เข้าโฟลเดอร์ <code>frontend/dist</code> เลือก<b>ทุกไฟล์ข้างใน</b> (<code>index.html</code>, <code>assets</code>, <code>covers</code>, …) → คลิกขวา → <b>Compress to ZIP file</b> ตั้งชื่อ <code>web.zip</code></p>
+  <div class="note"><span class="t">ต้อง zip ไฟล์ข้างใน dist</span>ถ้า zip ทั้งโฟลเดอร์ dist ไฟล์จะซ้อนอยู่ใน <code>dist/</code> แล้ว Amplify หา <code>index.html</code> ไม่เจอ เปิดเว็บจะขึ้น 404</div>
+  <h3>8.2 Deploy</h3>
+  <ol class="steps">
+    <li>ช่องค้นหาพิมพ์ <code>Amplify</code> → <b>Create new app</b> → เลือก <b>Deploy without Git</b> → <b>Next</b></li>
+    <li>App name <code>gamenight-web</code>, Branch name <code>main</code> → ลากไฟล์ <code>web.zip</code> มาวาง → <b>Save and deploy</b></li>
+    <li>รอจนขึ้น <b>Deployment successfully completed</b> แล้วคัดลอก <b>Domain</b> (หน้าตา <code>https://main.xxxxxxxx.amplifyapp.com</code>)</li>
+  </ol>
+  <h3>8.3 ตั้ง rewrite ให้รีเฟรชหน้าลึกได้</h3>
+  <ol class="steps">
+    <li>เมนูซ้ายของแอป → <b>Hosting</b> → <b>Rewrites and redirects</b> → <b>Manage redirects</b></li>
+    <li>เปลี่ยนเป็นโหมด JSON แล้ววางค่าด้านล่าง → <b>Save</b></li>
+  </ol>
+  <div class="code"><div class="bar"><span>Rewrites and redirects (JSON)</span><button class="copy" type="button">Copy</button></div><pre>[
+  {
+    "source": "&lt;/^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/&gt;",
+    "target": "/index.html",
+    "status": "200"
+  }
+]</pre></div>
+  <h3>8.4 ใส่โดเมนกลับไปที่ Lambda</h3>
+  <p>กลับไปที่ Lambda ทั้ง 2 ตัว → Configuration → Environment variables → แก้ <code>SITE_URL</code> เป็นโดเมน Amplify ลิงก์ในอีเมลแจ้งเตือนจะพาไปหน้าเกมได้</p>
+  <div class="grid2">
+    <figure><img src="img/web-home.jpg" alt="หน้า Store ของ Game Night บน Amplify" loading="lazy"><figcaption>หน้า Store โหลดเกมจาก API Gateway → Lambda → DynamoDB</figcaption></figure>
+    <figure><img src="img/web-game.jpg" alt="หน้ารายละเอียดเกม Starfall Odyssey" loading="lazy"><figcaption>หน้ารายละเอียดเกม เปิด/รีเฟรชลิงก์ <code>/game/1001</code> ได้เพราะตั้ง rewrite แล้ว</figcaption></figure>
+  </div>
+</section>
+
+<section class="card" id="eventbridge">
+  <h2><span class="num">9</span>ตั้งเวลาตรวจราคาทุกชั่วโมง <span class="svc">Amazon EventBridge</span></h2>
+  <ol class="steps">
+    <li>ช่องค้นหาพิมพ์ <code>EventBridge</code> → เมนูซ้าย <b>Buses › Rules</b> → <b>Create rule</b></li>
+    <li>Name <code>gamenight-hourly</code>, Event bus <code>default</code>, Rule type เลือก <b>Schedule</b></li>
+    <li>ถ้า Console เสนอให้ไปใช้ EventBridge Scheduler ให้เลือก <b>Continue in EventBridge Rules</b></li>
+    <li>Schedule pattern เลือก <b>A schedule that runs at a regular rate</b> → <code>1</code> <b>Hours</b> → <b>Next</b></li>
+    <li>Target: <b>AWS service</b> → <b>Lambda function</b> → Function <code>gamenight-deals</code> → <b>Next</b> → <b>Next</b> → <b>Create rule</b></li>
+  </ol>
+  <p class="sub">Console จะเพิ่มสิทธิ์ให้ EventBridge เรียก Lambda ตัวนี้ได้เอง ตรวจได้ที่ Lambda <code>gamenight-deals</code> → แผนภาพด้านบนต้องมีกล่อง <b>EventBridge (CloudWatch Events)</b> เป็น trigger</p>
+  <div class="shot-slot"><b>ภาพ Console:</b> หน้า Rule gamenight-hourly ที่เห็น Schedule rate(1 hour) และ target gamenight-deals</div>
+</section>
+
+<section class="card" id="test">
+  <h2><span class="num">10</span>ทดสอบทั้งระบบ</h2>
+  <h3>10.1 สมัครสมาชิกและใส่ Wishlist (เส้นทาง B)</h3>
+  <ol class="steps">
+    <li>เปิดโดเมน Amplify → <b>เข้าสู่ระบบ</b> → แท็บ <b>สมัครสมาชิก</b> ใช้<b>อีเมลจริง</b>ของตัวเอง</li>
+    <li>กดรูปหัวใจที่เกม 1–2 เกม (เลือกเกมที่ยังไม่ลดราคา) แล้วไปหน้า <b>Collection</b></li>
+    <li>แท็บ Wishlist กดปุ่ม <b>เปิดแจ้งเตือนลดราคา</b></li>
+    <li>เปิดอีเมล หาหัวข้อ <b>AWS Notification - Subscription Confirmation</b> กดลิงก์ <b>Confirm subscription</b> (ไม่เจอให้ดูใน spam)</li>
+    <li>กลับมาที่เว็บกด <b>ยืนยันแล้ว</b> ข้อความต้องเปลี่ยนเป็น "เปิดแจ้งเตือนเกมลดราคาแล้ว"</li>
+  </ol>
+  <div class="grid2">
+    <figure><img src="img/web-login.jpg" alt="หน้าเข้าสู่ระบบและสมัครสมาชิก" loading="lazy"><figcaption>หน้าเข้าสู่ระบบ / สมัครสมาชิก</figcaption></figure>
+    <figure><img src="img/web-wishlist.jpg" alt="หน้า Collection แท็บ Wishlist ที่มีปุ่มเปิดแจ้งเตือนลดราคา" loading="lazy"><figcaption>แท็บ Wishlist มีแถบ "เปิดแจ้งเตือนลดราคา" อยู่ด้านบน</figcaption></figure>
+  </div>
+  <h3>10.2 ลดราคาเกมแล้วสั่งตรวจทันที (เส้นทาง A)</h3>
+  <ol class="steps">
+    <li>หน้า <b>Admin</b> ของเว็บ เลือกเกมที่อยู่ใน Wishlist แล้วตั้งส่วนลด 30% → บันทึก</li>
+    <li>ไม่ต้องรอ 1 ชั่วโมง: Console → Lambda <code>gamenight-deals</code> → แท็บ <b>Test</b> → Event name <code>run-now</code> → Event JSON <code>{}</code> → <b>Test</b></li>
+    <li>ผลลัพธ์ต้องมี <code>"emailsSent": 1</code> แล้วอีเมลหัวข้อ <b>Game Night: เกมใน Wishlist ลดราคา</b> จะเข้ากล่องจดหมาย</li>
+    <li>กด Test ซ้ำ ต้องได้ <code>"emailsSent": 0</code> เพราะระบบจำไว้แล้วว่าแจ้งส่วนลดนี้ไปแล้ว</li>
+    <li>S3 → bucket → <code>logs/วันที่/</code> ต้องมีไฟล์ JSON ผลการตรวจทุกครั้งที่รัน</li>
+  </ol>
+  <figure><img src="img/web-admin.jpg" alt="หน้า Admin สำหรับแก้ราคาและข้อมูลเกม" loading="lazy"><figcaption>หน้า Admin ใช้แก้ราคาและส่วนลดของเกม</figcaption></figure>
+  <div class="code"><div class="bar"><span>ผลลัพธ์ Test ของ gamenight-deals (ตัวอย่างจากระบบจริง)</span><button class="copy" type="button">Copy</button></div><pre>{
+  "at": "2026-11-17T14:45:36.097Z",
+  "config": { "minDiscountPercent": 10 },
+  "wishlistItems": 7,
+  "subscribers": 1,
+  "emailsSent": 1,
+  "sent": [ { "email": "f***", "games": [1001, 1003] } ],
+  "reset": 0
+}</pre></div>
+  <div class="shot-slot"><b>ภาพ:</b> อีเมลยืนยัน subscription · อีเมลแจ้งเตือนเกมลดราคาที่ได้รับ · หน้า Test ของ Lambda ที่เห็น emailsSent: 1 · S3 logs/</div>
+  <figure><img src="img/web-library.jpg" alt="หน้า Collection แท็บ Library" loading="lazy"><figcaption>กด "ย้ายเข้าคลัง" เกมจะไปอยู่แท็บ Library ตั้งสถานะการเล่นและให้คะแนนได้</figcaption></figure>
+</section>
+
+<section class="card" id="trouble">
+  <h2>ตรวจปัญหาที่เจอบ่อย</h2>
+  <div class="table"><table>
+    <thead><tr><th>#</th><th>อาการ</th><th>สาเหตุ</th><th>วิธีแก้</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><code>/api/health</code> ได้ <code>Internal Server Error</code></td><td>Handler ไม่ตรง หรือ runtime ไม่ใช่ Node.js 22</td><td>Runtime settings ตั้ง Handler <code>index.handler</code>, runtime Node.js 22.x</td></tr>
+      <tr><td>2</td><td>Lambda ขึ้น <code>AccessDeniedException</code> ตอนอ่าน DynamoDB</td><td>ไม่ได้เลือก LabRole</td><td>Configuration → Permissions → Edit → Existing role <code>LabRole</code></td></tr>
+      <tr><td>3</td><td>หน้าเว็บขึ้นแต่ไม่มีเกม, console มี CORS error</td><td>ตั้ง CORS ใน API Gateway ซ้อน หรือ build ลืมใส่ <code>VITE_API_URL</code></td><td>ลบ CORS ใน API Gateway, build ใหม่โดยใส่ Invoke URL + <code>/api</code></td></tr>
+      <tr><td>4</td><td>เปิดเว็บ Amplify แล้ว 404</td><td>zip ทั้งโฟลเดอร์ dist</td><td>zip เฉพาะไฟล์ข้างใน dist แล้ว deploy ใหม่</td></tr>
+      <tr><td>5</td><td>รีเฟรช <code>/game/1001</code> แล้ว 404</td><td>ยังไม่ได้ตั้ง Rewrites</td><td>ทำขั้น 8.3</td></tr>
+      <tr><td>6</td><td><code>emailsSent: 0</code> ทั้งที่ลดราคาแล้ว</td><td>ยังไม่กดยืนยันอีเมล, ส่วนลดต่ำกว่าเกณฑ์ หรือเคยแจ้งส่วนลดนี้แล้ว</td><td>ดูค่า <code>subscribers</code> ในผลลัพธ์, ลดราคาให้ ≥ 10%, หรือตั้งส่วนลดใหม่ที่มากกว่าเดิม</td></tr>
+      <tr><td>7</td><td>ปุ่มแจ้งเตือนขึ้น "ยังไม่ได้ตั้งค่า SNS topic"</td><td>ไม่มี <code>TOPIC_ARN</code> ใน Lambda gamenight-api</td><td>เพิ่ม environment variable ตามขั้น 4</td></tr>
+      <tr><td>8</td><td>seed ขึ้น <code>ExpiredToken</code></td><td>Lab หยุดแล้วเริ่มใหม่ คีย์เดิมหมดอายุ</td><td>คัดลอก AWS CLI credentials ชุดใหม่จาก AWS Details</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="card" id="cleanup">
+  <h2>การลบระบบเมื่อใช้งานเสร็จ</h2>
+  <p>ลบตามลำดับนี้ เพื่อไม่ให้เหลือตัวที่ยังเรียกอีกตัวอยู่</p>
+  <ol class="steps">
+    <li><b>EventBridge</b> → Rules → เลือก <code>gamenight-hourly</code> → Delete</li>
+    <li><b>Amplify</b> → แอป <code>gamenight-web</code> → App settings → General settings → Delete app</li>
+    <li><b>API Gateway</b> → <code>gamenight-http-api</code> → Actions → Delete</li>
+    <li><b>Lambda</b> → เลือก <code>gamenight-api</code> และ <code>gamenight-deals</code> → Actions → Delete</li>
+    <li><b>SNS</b> → Topics → <code>gamenight-deals</code> → Delete (subscription ถูกลบตาม)</li>
+    <li><b>DynamoDB</b> → Tables → ติ๊กทั้ง 6 ตาราง <code>gamenight-*</code> → Delete</li>
+    <li><b>S3</b> → bucket <code>gamenight-config-…</code> → <b>Empty</b> ก่อน แล้วจึง <b>Delete</b></li>
+    <li><b>CloudWatch</b> → Log groups → ลบ <code>/aws/lambda/gamenight-api</code> และ <code>/aws/lambda/gamenight-deals</code> (ไม่บังคับ)</li>
+  </ol>
+  <div class="code"><div class="bar"><span>ลบทั้งหมดด้วย AWS CLI (ทางเลือก)</span><button class="copy" type="button">Copy</button></div><pre>aws events remove-targets --rule gamenight-hourly --ids deals
+aws events delete-rule --name gamenight-hourly
+aws lambda delete-function --function-name gamenight-api
+aws lambda delete-function --function-name gamenight-deals
+aws apigatewayv2 delete-api --api-id &lt;API_ID&gt;
+aws amplify delete-app --app-id &lt;AMPLIFY_APP_ID&gt;
+aws sns delete-topic --topic-arn &lt;TOPIC_ARN&gt;
+for t in games lookups users sessions collections counters; do aws dynamodb delete-table --table-name gamenight-$t; done
+aws s3 rb s3://&lt;CONFIG_BUCKET&gt; --force</pre></div>
+  <div class="note ok"><span class="t">ค่าใช้จ่าย</span>ทุกบริการคิดตามการใช้งาน ไม่มีค่ารายชั่วโมงแบบ EC2, ALB หรือ RDS โปรเจกต์ขนาดนี้แทบทั้งหมดอยู่ใน free tier แต่ควรลบเมื่อส่งงานเสร็จ</div>
+</section>
+
+</div>
+
+<script>
+document.querySelectorAll('.code').forEach(function (box) {
+  var btn = box.querySelector('.copy');
+  var pre = box.querySelector('pre');
+  if (!btn || !pre) return;
+  btn.addEventListener('click', function () {
+    var text = pre.innerText;
+    var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1500); };
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      btn.textContent = 'กด Ctrl+C';
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+      else fallback();
+    } catch (e) { fallback(); }
+  });
+});
+</script>

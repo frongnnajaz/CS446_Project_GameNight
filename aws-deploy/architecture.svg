@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 880" width="1560" height="880" font-family="'Noto Sans Thai','Leelawadee UI','Segoe UI',sans-serif">
+  <defs>
+    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#D9541E"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1F6FC9"/></marker>
+    <style>
+      .t{font-size:15px;font-weight:700;fill:#16191f;text-anchor:middle}
+      .s{font-size:13px;fill:#545b64;text-anchor:middle}
+      .lo{font-size:13px;fill:#D9541E;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+      .lb{font-size:13px;fill:#1F6FC9;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+      .o{stroke:#D9541E;stroke-width:2.5;fill:none;marker-end:url(#ao)}
+      .b{stroke:#1F6FC9;stroke-width:2.5;fill:none;marker-end:url(#ab)}
+      .w{stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .pill{fill:#f2f3f3}
+      .pt{font-size:14px;font-weight:600;fill:#414750}
+    </style>
+  </defs>
+
+  <rect width="1560" height="880" fill="#ffffff"/>
+  <text x="40" y="34" font-size="17" fill="#545b64">ระบบ Game Night บน AWS แบบ serverless · แจ้งเตือนเกมใน Wishlist ลดราคาทางอีเมล</text>
+
+  <!-- AWS Cloud -->
+  <rect x="250" y="56" width="980" height="790" fill="none" stroke="#232f3e" stroke-width="2"/>
+  <rect x="250" y="56" width="34" height="34" fill="#232f3e"/>
+  <text x="267" y="78" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">aws</text>
+  <text x="296" y="79" font-size="16" font-weight="700" fill="#16191f">AWS Cloud</text>
+
+  <!-- Region -->
+  <rect x="278" y="106" width="924" height="714" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="7 5"/>
+  <rect x="278" y="106" width="30" height="30" fill="#00A4A6"/>
+  <path d="M288 114 v16 M288 115 h11 l-3 4 l3 4 h-11" stroke="#fff" stroke-width="1.8" fill="none"/>
+  <text x="318" y="127" font-size="16" font-weight="700" fill="#00777a">Region: us-east-1 (N. Virginia)</text>
+
+  <!-- Lane labels -->
+  <rect x="300" y="146" width="330" height="28" rx="4" class="pill"/>
+  <text x="312" y="165" class="pt">A · ตรวจเกมลดราคาอัตโนมัติทุก 1 ชั่วโมง</text>
+  <rect x="300" y="778" width="390" height="28" rx="4" class="pill"/>
+  <text x="312" y="797" class="pt">B · ผู้ใช้ดูเกม สะสม Wishlist และสมัครแจ้งเตือน</text>
+
+  <!-- EventBridge -->
+  <rect x="398" y="218" width="64" height="64" fill="#E7157B"/>
+  <circle cx="430" cy="250" r="7" class="w"/>
+  <circle cx="414" cy="236" r="4" class="w"/><circle cx="446" cy="236" r="4" class="w"/>
+  <circle cx="414" cy="264" r="4" class="w"/><circle cx="446" cy="264" r="4" class="w"/>
+  <path d="M417 239 L425 245 M443 239 L435 245 M417 261 L425 255 M443 261 L435 255" class="w"/>
+  <text x="430" y="306" class="t">Amazon EventBridge</text>
+  <text x="430" y="324" class="s">gamenight-hourly · rate(1 hour)</text>
+
+  <!-- Lambda deals -->
+  <rect x="708" y="218" width="64" height="64" fill="#ED7100"/>
+  <path d="M724 230 h8 l18 40 M738 248 l-12 22" class="w" stroke-width="3.5"/>
+  <path d="M750 270 h6" class="w" stroke-width="3.5"/>
+  <text x="740" y="306" class="t">AWS Lambda</text>
+  <text x="740" y="324" class="s">gamenight-deals</text>
+
+  <!-- S3 -->
+  <rect x="398" y="438" width="64" height="64" fill="#7AA116"/>
+  <path d="M412 456 h36 l-5 32 h-26 z" class="w"/>
+  <ellipse cx="430" cy="456" rx="18" ry="5" stroke="#fff" stroke-width="2.5" fill="#7AA116"/>
+  <text x="430" y="526" class="t">Amazon S3</text>
+  <text x="430" y="544" class="s">gamenight-config-…</text>
+  <text x="430" y="562" class="s">config.json · logs/ · deploy/</text>
+
+  <!-- DynamoDB -->
+  <rect x="708" y="438" width="64" height="64" fill="#C925D1"/>
+  <ellipse cx="736" cy="453" rx="15" ry="5" class="w"/>
+  <path d="M721 453 v30 a15 5 0 0 0 30 0 v-30 M721 468 a15 5 0 0 0 30 0" class="w"/>
+  <path d="M760 452 l-6 12 h7 l-6 12" class="w" stroke-width="2"/>
+  <text x="740" y="526" class="t">Amazon DynamoDB</text>
+  <text x="740" y="544" class="s">games · lookups · users · sessions</text>
+  <text x="740" y="562" class="s">collections (Wishlist/คลัง) · counters</text>
+
+  <!-- SNS -->
+  <rect x="1028" y="438" width="64" height="64" fill="#E7157B"/>
+  <circle cx="1052" cy="470" r="12" class="w"/>
+  <path d="M1046 470 h12 M1052 464 l-4 6 l4 6" class="w" stroke-width="2"/>
+  <path d="M1064 470 h8 M1064 470 l8 -12 M1064 470 l8 12" class="w" stroke-width="2"/>
+  <circle cx="1076" cy="458" r="2.5" fill="#fff"/><circle cx="1076" cy="470" r="2.5" fill="#fff"/><circle cx="1076" cy="482" r="2.5" fill="#fff"/>
+  <text x="1060" y="526" class="t">Amazon SNS</text>
+  <text x="1060" y="544" class="s">gamenight-deals</text>
+
+  <!-- Amplify -->
+  <rect x="398" y="648" width="64" height="64" fill="#DD344C"/>
+  <path d="M412 698 L428 664 h6 L450 698 h-8 L431 674 L420 698 z" class="w" stroke-width="2.2"/>
+  <path d="M418 698 h26" class="w" stroke-width="2.2"/>
+  <text x="430" y="736" class="t">AWS Amplify</text>
+  <text x="430" y="754" class="s">gamenight-web (หน้าเว็บ https)</text>
+
+  <!-- API Gateway -->
+  <rect x="708" y="648" width="64" height="64" fill="#8C4FFF"/>
+  <path d="M724 664 v32 M756 664 v32" class="w"/>
+  <text x="740" y="686" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">&lt;/&gt;</text>
+  <text x="740" y="736" class="t">Amazon API Gateway</text>
+  <text x="740" y="754" class="s">HTTP API · gamenight-http-api</text>
+
+  <!-- Lambda api -->
+  <rect x="1028" y="648" width="64" height="64" fill="#ED7100"/>
+  <path d="M1044 660 h8 l18 40 M1058 678 l-12 22" class="w" stroke-width="3.5"/>
+  <path d="M1070 700 h6" class="w" stroke-width="3.5"/>
+  <text x="1060" y="736" class="t">AWS Lambda</text>
+  <text x="1060" y="754" class="s">gamenight-api (Express)</text>
+
+  <!-- User -->
+  <circle cx="122" cy="654" r="14" fill="none" stroke="#232f3e" stroke-width="2.5"/>
+  <path d="M96 702 a26 26 0 0 1 52 0 z" fill="none" stroke="#232f3e" stroke-width="2.5"/>
+  <text x="122" y="734" class="t">ผู้ใช้</text>
+  <text x="122" y="752" class="s">เว็บเบราว์เซอร์</text>
+
+  <!-- Email -->
+  <rect x="1346" y="452" width="52" height="36" fill="none" stroke="#232f3e" stroke-width="2.5"/>
+  <path d="M1346 452 L1372 474 L1398 452" fill="none" stroke="#232f3e" stroke-width="2.5"/>
+  <text x="1372" y="518" class="t">อีเมลผู้สมัคร</text>
+  <text x="1372" y="536" class="s">เฉพาะเกมใน Wishlist ของตัวเอง</text>
+
+  <!-- Path A (orange) -->
+  <line x1="468" y1="250" x2="700" y2="250" class="o"/>
+  <text x="584" y="240" class="lo" text-anchor="middle">① ทุก 1 ชม. สั่งรัน</text>
+
+  <path d="M704 272 L470 436" class="o"/>
+  <text x="470" y="372" class="lo">② อ่านเกณฑ์ / เขียน log</text>
+
+  <line x1="740" y1="334" x2="740" y2="430" class="o"/>
+  <text x="752" y="392" class="lo">③ อ่าน Wishlist + ราคาเกม</text>
+
+  <path d="M776 272 L1020 436" class="o"/>
+  <text x="905" y="340" class="lo">④ ลดราคาถึงเกณฑ์ → publish</text>
+
+  <line x1="1100" y1="470" x2="1336" y2="470" class="o"/>
+  <text x="1218" y="460" class="lo" text-anchor="middle">⑤ ส่งอีเมลตาม filter อีเมล</text>
+
+  <!-- Path B (blue) -->
+  <line x1="160" y1="680" x2="390" y2="680" class="b"/>
+  <text x="276" y="670" class="lb" text-anchor="middle">เปิดเว็บ</text>
+
+  <line x1="470" y1="680" x2="700" y2="680" class="b"/>
+  <text x="585" y="670" class="lb" text-anchor="middle">เรียก API</text>
+
+  <line x1="780" y1="680" x2="1020" y2="680" class="b"/>
+  <text x="900" y="670" class="lb" text-anchor="middle">/api/* ทุก route</text>
+
+  <path d="M1026 664 Q 900 470 782 470" class="b"/>
+  <text x="790" y="604" class="lb">อ่าน/เขียน เกม ผู้ใช้ Wishlist</text>
+
+  <line x1="1060" y1="642" x2="1060" y2="574" class="b"/>
+  <text x="1072" y="598" class="lb">subscribe</text>
+  <text x="1072" y="616" class="lb">+ filter อีเมล</text>
+
+  <!-- Legend -->
+  <g transform="translate(1262,600)">
+    <text x="0" y="0" font-size="14" font-weight="700" fill="#16191f">นับเป็นบริการ 7 ตัว</text>
+    <text x="0" y="22" font-size="13" fill="#545b64">EventBridge, Lambda, S3, DynamoDB,</text>
+    <text x="0" y="40" font-size="13" fill="#545b64">SNS, API Gateway, Amplify</text>
+    <text x="0" y="58" font-size="13" fill="#545b64">ใช้ IAM (LabRole) และ CloudWatch Logs</text>
+    <text x="0" y="76" font-size="13" fill="#545b64">ร่วมด้วย</text>
+    <line x1="0" y1="102" x2="34" y2="102" stroke="#D9541E" stroke-width="3"/>
+    <text x="44" y="107" font-size="13" fill="#545b64">เส้นทาง A อัตโนมัติ</text>
+    <line x1="0" y1="128" x2="34" y2="128" stroke="#1F6FC9" stroke-width="3"/>
+    <text x="44" y="133" font-size="13" fill="#545b64">เส้นทาง B ผู้ใช้</text>
+  </g>
+</svg>

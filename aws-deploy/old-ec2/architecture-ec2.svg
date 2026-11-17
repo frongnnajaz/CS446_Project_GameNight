@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 920" width="1560" height="920" font-family="'Noto Sans Thai','Leelawadee UI','Segoe UI',sans-serif">
+  <defs>
+    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#D9541E"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1F6FC9"/></marker>
+    <style>
+      .t{font-size:15px;font-weight:700;fill:#16191f;text-anchor:middle}
+      .s{font-size:13px;fill:#545b64;text-anchor:middle}
+      .sg{font-size:12px;fill:#7d8998;text-anchor:middle}
+      .lo{font-size:13px;fill:#D9541E;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+      .lb{font-size:13px;fill:#1F6FC9;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}
+      .o{stroke:#D9541E;stroke-width:2.5;fill:none;marker-end:url(#ao)}
+      .b{stroke:#1F6FC9;stroke-width:2.5;fill:none;marker-end:url(#ab)}
+      .num{font-size:13px}
+    </style>
+  </defs>
+
+  <rect width="1560" height="920" fill="#ffffff"/>
+  <text x="40" y="34" font-size="17" fill="#545b64">ระบบ Game Night บน AWS · S3 Website + ALB + Auto Scaling + RDS (AWS Academy Learner Lab)</text>
+
+  <!-- AWS Cloud -->
+  <rect x="250" y="60" width="980" height="830" fill="none" stroke="#232f3e" stroke-width="2"/>
+  <rect x="250" y="60" width="34" height="34" fill="#232f3e"/>
+  <text x="267" y="82" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">aws</text>
+  <text x="296" y="83" font-size="16" font-weight="700" fill="#16191f">AWS Cloud</text>
+
+  <!-- Region -->
+  <rect x="278" y="112" width="924" height="756" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="7 5"/>
+  <rect x="278" y="112" width="30" height="30" fill="#00A4A6"/>
+  <path d="M288 120 v16 M288 121 h11 l-3 4 l3 4 h-11" stroke="#fff" stroke-width="1.8" fill="none"/>
+  <text x="318" y="133" font-size="16" font-weight="700" fill="#00777a">Region: us-east-1 (N. Virginia)</text>
+
+  <!-- VPC -->
+  <rect x="306" y="160" width="868" height="530" fill="none" stroke="#8C4FFF" stroke-width="2"/>
+  <rect x="306" y="160" width="30" height="30" fill="#8C4FFF"/>
+  <rect x="314" y="171" width="14" height="11" rx="2" stroke="#fff" stroke-width="1.8" fill="none"/>
+  <path d="M317 171 v-3 a4 4 0 0 1 8 0 v3" stroke="#fff" stroke-width="1.8" fill="none"/>
+  <text x="346" y="181" font-size="15" font-weight="700" fill="#5a2db3">Default VPC · 3 Availability Zones (1a, 1b, 1c)</text>
+
+  <!-- Auto Scaling Group -->
+  <rect x="600" y="214" width="290" height="440" fill="#fff8f2" stroke="#ED7100" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="745" y="238" font-size="14" font-weight="700" fill="#b35400" text-anchor="middle">EC2 Auto Scaling · gamenight-asg</text>
+  <text x="745" y="256" class="s">Min 1 · Desired 2 · Max 4</text>
+  <text x="745" y="622" class="s">ปรับขนาด: CPU เฉลี่ย 50%</text>
+  <text x="745" y="640" class="s">และ 1000 request ต่อเครื่อง</text>
+
+  <!-- User -->
+  <circle cx="122" cy="402" r="14" fill="none" stroke="#232f3e" stroke-width="2.5"/>
+  <path d="M96 450 a26 26 0 0 1 52 0 z" fill="none" stroke="#232f3e" stroke-width="2.5"/>
+  <text x="122" y="482" class="t">ผู้ใช้</text>
+  <text x="122" y="500" class="s">เว็บเบราว์เซอร์</text>
+
+  <!-- ALB -->
+  <rect x="398" y="398" width="64" height="64" fill="#8C4FFF"/>
+  <circle cx="416" cy="430" r="8" stroke="#fff" stroke-width="2.5" fill="none"/>
+  <path d="M424 430 h10 M434 430 l12 -14 M434 430 l12 14 M434 430 h12" stroke="#fff" stroke-width="2.5" fill="none"/>
+  <circle cx="448" cy="416" r="3" fill="#fff"/><circle cx="448" cy="430" r="3" fill="#fff"/><circle cx="448" cy="444" r="3" fill="#fff"/>
+  <text x="430" y="488" class="t">Application Load Balancer</text>
+  <text x="430" y="506" class="s">gamenight-alb · listener HTTP :80</text>
+  <text x="430" y="524" class="s">target group gamenight-tg</text>
+  <text x="430" y="542" class="sg">SG: sg-alb</text>
+
+  <!-- EC2 #1 -->
+  <g id="ec2a">
+    <rect x="713" y="290" width="64" height="64" fill="#ED7100"/>
+    <rect x="729" y="306" width="32" height="32" stroke="#fff" stroke-width="2.5" fill="none"/>
+    <path d="M735 300v6M745 300v6M755 300v6M735 338v6M745 338v6M755 338v6M723 312h6M723 322h6M723 332h6M761 312h6M761 322h6M761 332h6" stroke="#fff" stroke-width="2"/>
+  </g>
+  <text x="745" y="376" class="t">Amazon EC2 · t3.micro</text>
+  <text x="745" y="393" class="s">nginx :3000 → Node API :3001</text>
+
+  <!-- EC2 #2 -->
+  <use href="#ec2a" y="180"/>
+  <text x="745" y="556" class="t">Amazon EC2 · t3.micro</text>
+  <text x="745" y="573" class="s">nginx :3000 → Node API :3001</text>
+  <text x="745" y="600" class="sg">SG: sg-app (ทุกเครื่อง)</text>
+
+  <!-- RDS -->
+  <rect x="1028" y="398" width="64" height="64" fill="#C925D1"/>
+  <ellipse cx="1060" cy="414" rx="16" ry="6" stroke="#fff" stroke-width="2.5" fill="none"/>
+  <path d="M1044 414 v32 a16 6 0 0 0 32 0 v-32 M1044 430 a16 6 0 0 0 32 0" stroke="#fff" stroke-width="2.5" fill="none"/>
+  <text x="1060" y="488" class="t">Amazon RDS</text>
+  <text x="1060" y="506" class="s">PostgreSQL 18 · db.t3.micro</text>
+  <text x="1060" y="524" class="s">gamenight-db · DB gamenight</text>
+  <text x="1060" y="542" class="sg">SG: sg-db · ไม่เปิด public</text>
+
+  <!-- Launch template -->
+  <rect x="713" y="728" width="64" height="64" fill="#ED7100"/>
+  <path d="M731 742 h20 l8 8 v28 h-28 z M751 742 v8 h8" stroke="#fff" stroke-width="2.5" fill="none"/>
+  <path d="M737 760 h16 M737 768 h16" stroke="#fff" stroke-width="2"/>
+  <text x="745" y="816" class="t">Launch Template</text>
+  <text x="745" y="834" class="s">gamenight-template · AL2023 + User data</text>
+
+  <!-- S3 static website -->
+  <rect x="398" y="728" width="64" height="64" fill="#7AA116"/>
+  <path d="M412 746 h36 l-5 32 h-26 z" stroke="#fff" stroke-width="2.5" fill="none"/>
+  <ellipse cx="430" cy="746" rx="18" ry="5" stroke="#fff" stroke-width="2.5" fill="#7AA116"/>
+  <text x="430" y="816" class="t">Amazon S3 · Static Website</text>
+  <text x="430" y="834" class="s">gamenight-web-f5ef45e2</text>
+  <text x="430" y="852" class="s">หน้าเว็บ dist + ภาพเกม /covers</text>
+
+  <!-- GitHub external -->
+  <rect x="1338" y="290" width="64" height="64" rx="32" fill="#24292f"/>
+  <circle cx="1360" cy="308" r="4" stroke="#fff" stroke-width="2.2" fill="none"/>
+  <circle cx="1360" cy="336" r="4" stroke="#fff" stroke-width="2.2" fill="none"/>
+  <circle cx="1382" cy="314" r="4" stroke="#fff" stroke-width="2.2" fill="none"/>
+  <path d="M1360 312 v20 M1382 318 c0 10 -22 6 -22 14" stroke="#fff" stroke-width="2.2" fill="none"/>
+  <text x="1370" y="376" class="t">GitHub</text>
+  <text x="1370" y="394" class="s">CS446_Project_GameNight</text>
+  <text x="1370" y="412" class="s">repo แบบ Public</text>
+
+  <!-- Path A: user request (orange) -->
+  <path d="M122 514 V760 H392" class="o"/>
+  <text x="134" y="640" class="lo">① เปิดเว็บ: โหลด</text>
+  <text x="134" y="658" class="lo">หน้าเว็บ + ภาพเกม</text>
+  <text x="134" y="676" class="lo">http (S3 website)</text>
+
+  <line x1="160" y1="430" x2="392" y2="430" class="o"/>
+  <text x="276" y="420" class="lo" text-anchor="middle">② เรียก API /api/* :80</text>
+
+  <path d="M464 422 L706 330" class="o"/>
+  <path d="M464 438 L706 504" class="o"/>
+  <text x="470" y="286" class="lo">③ กระจาย request ไป :3000</text>
+  <text x="470" y="304" class="lo">health check /api/health</text>
+
+  <path d="M780 332 L1022 418" class="o"/>
+  <text x="935" y="364" class="lo">④ อ่าน-เขียนข้อมูล :5432</text>
+
+  <!-- Path B: boot (blue) -->
+  <line x1="745" y1="722" x2="745" y2="662" class="b"/>
+  <text x="755" y="713" class="lb">⑤ เปิดเครื่องใหม่จากแม่แบบ</text>
+
+  <path d="M780 310 Q 1060 250 1332 314" class="b"/>
+  <text x="1060" y="252" class="lb" text-anchor="middle">⑥ ตอนบูต: git clone · npm ci</text>
+
+  <path d="M780 508 L1022 446" class="b"/>
+  <text x="830" y="456" class="lb">⑦ migrate + seed</text>
+
+  <!-- Legend -->
+  <g transform="translate(1262,560)">
+    <text x="0" y="0" font-size="14" font-weight="700" fill="#16191f">นับเป็นบริการ 5 ตัว</text>
+    <text x="0" y="22" font-size="13" fill="#545b64">EC2, Elastic Load Balancing,</text>
+    <text x="0" y="40" font-size="13" fill="#545b64">EC2 Auto Scaling, RDS, S3</text>
+    <text x="0" y="68" font-size="14" font-weight="700" fill="#16191f">Security Group</text>
+    <text x="0" y="90" font-size="13" fill="#545b64">sg-alb: :80 จากทุกที่</text>
+    <text x="0" y="108" font-size="13" fill="#545b64">sg-app: :3000 จาก sg-alb</text>
+    <text x="0" y="126" font-size="13" fill="#545b64">sg-db: :5432 จาก sg-app</text>
+    <text x="0" y="154" font-size="13" fill="#545b64">CloudFront ถูกบล็อกใน Learner Lab</text>
+    <text x="0" y="172" font-size="13" fill="#545b64">จึงใช้ S3 website แทน · API ผ่าน CORS</text>
+    <line x1="0" y1="198" x2="34" y2="198" stroke="#D9541E" stroke-width="3"/>
+    <text x="44" y="203" font-size="13" fill="#545b64">เส้นทาง A ผู้ใช้</text>
+    <line x1="0" y1="224" x2="34" y2="224" stroke="#1F6FC9" stroke-width="3"/>
+    <text x="44" y="229" font-size="13" fill="#545b64">เส้นทาง B เครื่องใหม่บูต</text>
+  </g>
+</svg>
