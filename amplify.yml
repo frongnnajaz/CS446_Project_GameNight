@@ -1,0 +1,22 @@
+# AWS Amplify build settings: build เฉพาะหน้าเว็บในโฟลเดอร์ frontend (monorepo)
+# ตั้ง Environment variables ใน Amplify Console:
+#   AMPLIFY_MONOREPO_APP_ROOT = frontend
+#   VITE_API_URL              = https://<api-id>.execute-api.us-east-1.amazonaws.com/api
+version: 1
+applications:
+  - appRoot: frontend
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
